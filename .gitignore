@@ -67,7 +67,8 @@ Thumbs.db
 
 # OpenCode specific
 opencode_sessions/
-.opencode/
+# .opencode/ - Commented out, we want to version control custom commands
+# .opencode/
 
 # Node-RED flows (safety - per Kent's instruction)
 # .node-red/ - Commented out, never touch without explicit permission
