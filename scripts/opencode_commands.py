@@ -114,6 +114,7 @@ def run_finish_command():
         if restart_result.returncode == 0:
             print("✅ Memory cleared - service restarted")
             print("\n👋 Session complete! Start new CLI session and use /start")
+            print("\n/finish complete, okay to close the CLI window ...")
         else:
             print("❌ Service restart failed")
             print(restart_result.stderr)
