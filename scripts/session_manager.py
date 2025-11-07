@@ -18,6 +18,46 @@ class SessionManager:
         
         # Ensure sessions directory exists
         self.sessions_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create symlink for compatibility with different path references
+        self._create_path_symlinks()
+    
+    def _create_path_symlinks(self):
+        """Create symlinks to ensure sessions directory is accessible from different path references"""
+        try:
+            # Create symlink in root if possible
+            root_sessions = Path("/Assistant/sessions")
+            if not root_sessions.exists():
+                root_sessions.parent.mkdir(parents=True, exist_ok=True)
+                root_sessions.symlink_to(self.sessions_dir)
+        except (PermissionError, OSError):
+            # If we can't create root symlink, create in user home
+            try:
+                home_sessions = Path("~/Assistant/sessions").expanduser()
+                if not home_sessions.exists():
+                    home_sessions.parent.mkdir(parents=True, exist_ok=True)
+                    home_sessions.symlink_to(self.sessions_dir)
+            except (PermissionError, OSError):
+                pass  # Symlinks not critical, just for convenience
+    
+    @staticmethod
+    def get_sessions_path():
+        """Static method to get the correct sessions directory path"""
+        # Try multiple possible locations
+        possible_paths = [
+            Path("/home/kent/Assistant/sessions"),
+            Path("/Assistant/sessions"),
+            Path("~/Assistant/sessions").expanduser(),
+        ]
+        
+        for path in possible_paths:
+            if path.exists():
+                return path
+        
+        # If none exist, return the default and create it
+        default_path = Path("/home/kent/Assistant/sessions")
+        default_path.mkdir(parents=True, exist_ok=True)
+        return default_path
     
     def get_current_session_info(self):
         """Get current session information"""
@@ -423,7 +463,7 @@ def main():
         )
         
         print(f"\n✅ Session {session_id} saved successfully!")
-        print("📁 Session files created in /Assistant/sessions/")
+        print(f"📁 Session files created in {manager.sessions_dir}")
         
     elif command == "quick-finish":
         if len(sys.argv) < 5:
