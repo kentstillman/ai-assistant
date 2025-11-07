@@ -1,0 +1,4 @@
+# Python package dependencies
+# Add external libraries here as you use them in your scripts
+
+flask==3.0.0
