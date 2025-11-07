@@ -108,6 +108,12 @@ class SessionManager:
         # Save updated cumulative recap
         with open(self.cumulative_recap_file, 'w') as f:
             json.dump(updated_recap, f, indent=2)
+        
+        # Trigger automatic GitHub backup
+        self._auto_github_backup(session_info)
+        
+        # Trigger automatic GitHub backup
+        self._auto_github_backup(session_info)
     
     def _load_cumulative_recap(self):
         """Load existing cumulative recap"""
@@ -294,6 +300,33 @@ class SessionManager:
         existing_recap["security_constraints"] = list(set(existing_recap["security_constraints"]))
         
         return existing_recap
+    
+    def _auto_github_backup(self, session_info):
+        """Trigger automatic GitHub backup after session save"""
+        try:
+            import subprocess
+            import sys
+            
+            # Path to GitHub backup script
+            backup_script = Path("/home/kent/Assistant/scripts/github_backup.py")
+            
+            if backup_script.exists():
+                # Use accomplishments for commit message
+                accomplishments = session_info.get("accomplishments", "session completed")
+                result = subprocess.run(
+                    [sys.executable, str(backup_script), "session", accomplishments[:50]],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                
+                # Log result but don't fail session save if backup fails
+                if result.returncode == 0:
+                    print(f"🔒 GitHub backup successful: {result.stdout.strip()}")
+                else:
+                    print(f"⚠️  GitHub backup failed: {result.stderr.strip()}")
+        except Exception as e:
+            print(f"⚠️  GitHub backup error: {e}")
     
     def start_new_session(self):
         """Start a new session and restore context from cumulative recap"""

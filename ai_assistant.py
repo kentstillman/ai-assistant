@@ -31,6 +31,7 @@ def load_manager_class(script_name: str, class_name: str):
 try:
     SessionManager = load_manager_class("session_manager.py", "SessionManager")
     OpenCodeManager = load_manager_class("opencode_manager.py", "OpenCodeManager")
+    GitHubBackup = load_manager_class("github_backup.py", "GitHubBackup")
 except Exception as e:
     print(f"Failed to load manager classes: {e}")
     sys.exit(1)
@@ -47,6 +48,7 @@ class AIAssistant:
         # Initialize managers
         self.session_manager = SessionManager()
         self.opencode_manager = OpenCodeManager()
+        self.github_backup = GitHubBackup()
         
         # Setup logging
         self._setup_logging()
@@ -210,12 +212,22 @@ class AIAssistant:
         completed_task = self.current_task
         self.current_task = None
         
+        # Trigger GitHub backup
+        backup_success = False
+        backup_message = ""
+        try:
+            backup_success, backup_message = self.github_backup.backup_after_accomplishment(accomplishments)
+            self.logger.info(f"GitHub backup: {backup_message}")
+        except Exception as e:
+            self.logger.warning(f"GitHub backup failed: {e}")
+        
         self.logger.info(f"Task completed: {completed_task}")
         
         return {
             "status": "success",
             "completed_task": completed_task,
             "session_id": session_id,
+            "github_backup": backup_success,
             "timestamp": datetime.now().isoformat()
         }
     
