@@ -4,5 +4,9 @@
     "edit": "allow",
     "bash": "allow",
     "webfetch": "allow"
+  },
+  "terminal": {
+    "autoSpace": false,
+    "autoComplete": false
   }
 }

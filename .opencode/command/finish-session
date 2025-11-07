@@ -1,14 +1,8 @@
 #!/bin/bash
 # Finish command - Save session and restart service
 
-# Strip trailing space from arguments if present
-args=()
-for arg in "$@"; do
-    args+=("${arg% }")
-done
-
 # Save session with provided arguments or use defaults
-if [ ${#args[@]} -eq 0 ]; then
+if [ $# -eq 0 ]; then
     # No arguments provided - use quick-finish with defaults
     python3 /home/kent/Assistant/scripts/session_manager.py quick-finish \
         "Session completed" \
@@ -16,8 +10,8 @@ if [ ${#args[@]} -eq 0 ]; then
         "Continue with next steps" \
         "No additional notes"
 else
-    # Use provided arguments (with spaces stripped)
-    python3 /home/kent/Assistant/scripts/session_manager.py quick-finish "${args[@]}"
+    # Use provided arguments
+    python3 /home/kent/Assistant/scripts/session_manager.py quick-finish "$@"
 fi
 
 # Restart OpenCode service to clear memory
