@@ -1,0 +1,21 @@
+#!/bin/bash
+# Finish command - Save session and restart service
+
+# Save session with provided arguments or use defaults
+if [ $# -eq 0 ]; then
+    # No arguments provided - use quick-finish with defaults
+    python3 /home/kent/Assistant/scripts/session_manager.py quick-finish \
+        "Session completed" \
+        "Work in progress" \
+        "Continue with next steps" \
+        "No additional notes"
+else
+    # Use provided arguments
+    python3 /home/kent/Assistant/scripts/session_manager.py quick-finish "$@"
+fi
+
+# Restart OpenCode service to clear memory
+echo "Restarting OpenCode service to clear memory..."
+sudo systemctl restart opencode.service
+
+echo "✅ Session saved and memory cleared. Safe to close CLI window."

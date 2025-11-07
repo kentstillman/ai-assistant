@@ -1,0 +1,5 @@
+#!/bin/bash
+# Start command - Restore session context
+
+echo "Loading session context..."
+python3 /home/kent/Assistant/scripts/session_manager.py start
